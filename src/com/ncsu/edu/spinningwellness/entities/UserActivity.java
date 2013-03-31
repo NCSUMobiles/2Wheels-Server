@@ -4,7 +4,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class UserActivity {
-	
+
 	String id;
 	String rideId;
 	String userName;
@@ -12,12 +12,13 @@ public class UserActivity {
 	double cadence;
 	double averageSpeed;
 	double caloriesBurned;
+	double heartRate;
 	long activityDate;
-	
+
 	public UserActivity() {}
 
 	public UserActivity(String id, String rideId, String userName, double distaceCovered,
-			double cadence, double averageSpeed, double caloriesBurned, long activityDate) {
+			double cadence, double averageSpeed, double caloriesBurned, double heartRate, long activityDate) {
 		super();
 		this.id = id;
 		this.rideId = rideId;
@@ -26,6 +27,7 @@ public class UserActivity {
 		this.cadence = cadence;
 		this.averageSpeed = averageSpeed;
 		this.caloriesBurned = caloriesBurned;
+		this.heartRate = heartRate;
 		this.activityDate = activityDate;
 	}
 
@@ -84,12 +86,34 @@ public class UserActivity {
 	public void setCaloriesBurned(double caloriesBurned) {
 		this.caloriesBurned = caloriesBurned;
 	}
-	
+
 	public long getActivityDate() {
 		return activityDate;
 	}
 
 	public void setActivityDate(long activityDate) {
 		this.activityDate = activityDate;
+	}
+
+	public double getHeartRate() {
+		return heartRate;
+	}
+
+	public void setHeartRate(long heartRate) {
+		this.heartRate = heartRate;
+	}
+
+	@Override
+	public String toString() {
+		return "UserActivity: Id = " + this.id + ", " + 
+				"Ride Id = " + this.rideId + ", " +
+				"User Name = " + this.userName + ", " +
+				"Distance Covered = " + this.distaceCovered + ", " +
+				"Creator = " + this.caloriesBurned + ", " +
+				"Cadence = " + this.cadence + ", " +
+				"Avg speed = " + this.averageSpeed + ", " +
+				"Heart Rate = " + this.heartRate + ", " +
+				"Date = " + this.activityDate
+				;
 	}
 }

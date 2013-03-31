@@ -152,12 +152,14 @@ public class UserController {
 					DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 
 					Entity dbUserActicity = new Entity("UserActivity", activity.getId());
+					
 					dbUserActicity.setProperty("id", activity.getId());
 					dbUserActicity.setProperty("rideId", persistedRide.getKey());
 					dbUserActicity.setProperty("userName", persistedUser.getKey());
 					dbUserActicity.setProperty("distanceCovered", activity.getDistaceCovered());
 					dbUserActicity.setProperty("caloriesBurned", activity.getCaloriesBurned());
 					dbUserActicity.setProperty("cadence", activity.getCadence());
+					dbUserActicity.setProperty("heartRate", activity.getHeartRate());
 					dbUserActicity.setProperty("averageSpeed", activity.getAverageSpeed());
 					dbUserActicity.setProperty("activityDate", activity.getActivityDate());
 					ds.put(dbUserActicity);
@@ -192,14 +194,14 @@ public class UserController {
 
 		//filter for start date
 		Date today = new Date();	  
-		Filter activityDateFilterLessThan = new Query.FilterPredicate("activityDate", FilterOperator.LESS_THAN_OR_EQUAL, Utils.convertDateToString(today));
+		Filter activityDateFilterLessThan = new Query.FilterPredicate("activityDate", FilterOperator.LESS_THAN_OR_EQUAL, Utils.convertDateToLong(today));
 
 		//filter for end date
 		Calendar cal = Calendar.getInstance();  
 		cal.setTime(today);  
 		cal.add(Calendar.DATE, -7);  
 		today = cal.getTime();  		
-		Filter activityDateFilterGreaterThan = new Query.FilterPredicate("activityDate", FilterOperator.GREATER_THAN_OR_EQUAL, Utils.convertDateToString(today));
+		Filter activityDateFilterGreaterThan = new Query.FilterPredicate("activityDate", FilterOperator.GREATER_THAN_OR_EQUAL, Utils.convertDateToLong(today));
 
 		//Filter for user name
 		Filter activityUserFilter = new Query.FilterPredicate("userName", FilterOperator.EQUAL, KeyFactory.createKey("User", name));
@@ -216,11 +218,12 @@ public class UserController {
 			String userName = ((Key) result.getProperty("userName")).getName();
 			double distanceCovered = (Double) result.getProperty("distanceCovered");
 			double caloriesBurned = (Double) result.getProperty("caloriesBurned");
+			double heartRate = (Double) result.getProperty("heartRate");
 			double cadence = (Double) result.getProperty("cadence");
 			double averageSpeed = (Double) result.getProperty("averageSpeed");
 			long activityDate = (Long) result.getProperty("activityDate");
 
-			UserActivity ua = new UserActivity(id, rideId, userName, distanceCovered, cadence, averageSpeed, caloriesBurned, activityDate);
+			UserActivity ua = new UserActivity(id, rideId, userName, distanceCovered, cadence, averageSpeed, caloriesBurned, heartRate, activityDate);
 			userActivities.add(ua);
 		}
 		return userActivities;		
@@ -246,7 +249,7 @@ public class UserController {
 
 		//Filter for end date
 		Date today = new Date();
-		Filter activityDateFilter = new Query.FilterPredicate("activityDate", FilterOperator.LESS_THAN_OR_EQUAL, Utils.convertDateToString(today));
+		Filter activityDateFilter = new Query.FilterPredicate("activityDate", FilterOperator.LESS_THAN_OR_EQUAL, Utils.convertDateToLong(today));
 
 		//Filter for user name
 		Filter activityUserFilter = new Query.FilterPredicate("userName", FilterOperator.EQUAL, KeyFactory.createKey("User", name));
@@ -263,11 +266,12 @@ public class UserController {
 			String userName = ((Key) result.getProperty("userName")).getName();
 			double distanceCovered = (Double) result.getProperty("distanceCovered");
 			double caloriesBurned = (Double) result.getProperty("caloriesBurned");
+			double heartRate = (Double) result.getProperty("heartRate");
 			double cadence = (Double) result.getProperty("cadence");
 			double averageSpeed = (Double) result.getProperty("averageSpeed");
 			long activityDate = (Long) result.getProperty("activityDate");
 
-			UserActivity ua = new UserActivity(id, rideId, userName, distanceCovered, cadence, averageSpeed, caloriesBurned, activityDate);
+			UserActivity ua = new UserActivity(id, rideId, userName, distanceCovered, cadence, averageSpeed, caloriesBurned, heartRate, activityDate);
 			userActivities.add(ua);
 		}
 		return userActivities;
@@ -292,14 +296,14 @@ public class UserController {
 
 		//Filter for end date
 		Date today = new Date();	  
-		Filter activityDateFilterLessThan = new Query.FilterPredicate("activityDate", FilterOperator.LESS_THAN_OR_EQUAL, Utils.convertDateToString(today));
+		Filter activityDateFilterLessThan = new Query.FilterPredicate("activityDate", FilterOperator.LESS_THAN_OR_EQUAL, Utils.convertDateToLong(today));
 
 		//Filter for start date
 		Calendar cal = Calendar.getInstance();  
 		cal.setTime(today);  
 		cal.add(Calendar.DATE, -7);  
 		today = cal.getTime();  		
-		Filter activityDateFilterGreaterThan = new Query.FilterPredicate("activityDate", FilterOperator.GREATER_THAN_OR_EQUAL, Utils.convertDateToString(today));
+		Filter activityDateFilterGreaterThan = new Query.FilterPredicate("activityDate", FilterOperator.GREATER_THAN_OR_EQUAL, Utils.convertDateToLong(today));
 
 		//Filter for user name
 		Filter activityUserFilter = new Query.FilterPredicate("userName", FilterOperator.EQUAL, KeyFactory.createKey("User", name));
@@ -341,7 +345,7 @@ public class UserController {
 
 		//Filter for end date
 		Date today = new Date();	  
-		Filter activityDateFilterLessThan = new Query.FilterPredicate("activityDate", FilterOperator.LESS_THAN_OR_EQUAL, Utils.convertDateToString(today));		
+		Filter activityDateFilterLessThan = new Query.FilterPredicate("activityDate", FilterOperator.LESS_THAN_OR_EQUAL, Utils.convertDateToLong(today));		
 
 		//Filter for user name
 		Filter activityUserFilter = new Query.FilterPredicate("userName", FilterOperator.EQUAL, KeyFactory.createKey("User", name));
@@ -422,14 +426,14 @@ public class UserController {
 
 		//End date filter
 		Date today = new Date();	  
-		Filter activityDateFilterLessThan = new Query.FilterPredicate("activityDate", FilterOperator.LESS_THAN_OR_EQUAL, Utils.convertDateToString(today));
+		Filter activityDateFilterLessThan = new Query.FilterPredicate("activityDate", FilterOperator.LESS_THAN_OR_EQUAL, Utils.convertDateToLong(today));
 
 		//Start date filter
 		Calendar cal = Calendar.getInstance();  
 		cal.setTime(today);  
 		cal.add(Calendar.DATE, -7);  
 		today = cal.getTime();  		
-		Filter activityDateFilterGreaterThan = new Query.FilterPredicate("activityDate", FilterOperator.GREATER_THAN_OR_EQUAL, Utils.convertDateToString(today));
+		Filter activityDateFilterGreaterThan = new Query.FilterPredicate("activityDate", FilterOperator.GREATER_THAN_OR_EQUAL, Utils.convertDateToLong(today));
 
 		//user name filter
 		Filter activityUserFilter = new Query.FilterPredicate("userName", FilterOperator.EQUAL, KeyFactory.createKey("User", name));
@@ -466,7 +470,7 @@ public class UserController {
 
 		//End date filter
 		Date today = new Date();	  
-		Filter activityDateFilterLessThan = new Query.FilterPredicate("activityDate", FilterOperator.LESS_THAN_OR_EQUAL, Utils.convertDateToString(today));		
+		Filter activityDateFilterLessThan = new Query.FilterPredicate("activityDate", FilterOperator.LESS_THAN_OR_EQUAL, Utils.convertDateToLong(today));		
 
 		//User name filter
 		Filter activityUserFilter = new Query.FilterPredicate("userName", FilterOperator.EQUAL, KeyFactory.createKey("User", name));
@@ -500,13 +504,13 @@ public class UserController {
 		Query query = new Query("UserActivity");
 
 		Date today = new Date();	  
-		Filter activityDateFilterLessThan = new Query.FilterPredicate("activityDate", FilterOperator.LESS_THAN_OR_EQUAL, Utils.convertDateToString(today));
+		Filter activityDateFilterLessThan = new Query.FilterPredicate("activityDate", FilterOperator.LESS_THAN_OR_EQUAL, Utils.convertDateToLong(today));
 
 		Calendar cal = Calendar.getInstance();  
 		cal.setTime(today);  
 		cal.add(Calendar.DATE, -7);  
 		today = cal.getTime();  		
-		Filter activityDateFilterGreaterThan = new Query.FilterPredicate("activityDate", FilterOperator.GREATER_THAN_OR_EQUAL, Utils.convertDateToString(today));
+		Filter activityDateFilterGreaterThan = new Query.FilterPredicate("activityDate", FilterOperator.GREATER_THAN_OR_EQUAL, Utils.convertDateToLong(today));
 
 		Filter activityDateRangeFilter = CompositeFilterOperator.and(activityDateFilterLessThan, activityDateFilterGreaterThan);
 		query.setFilter(activityDateRangeFilter);
@@ -547,7 +551,7 @@ public class UserController {
 		Query query = new Query("UserActivity");
 
 		Date today = new Date();	  
-		Filter activityDateFilterLessThan = new Query.FilterPredicate("activityDate", FilterOperator.LESS_THAN_OR_EQUAL, Utils.convertDateToString(today));
+		Filter activityDateFilterLessThan = new Query.FilterPredicate("activityDate", FilterOperator.LESS_THAN_OR_EQUAL, Utils.convertDateToLong(today));
 		query.setFilter(activityDateFilterLessThan);
 
 		Map<String, Double> userDistanceCovered = new HashMap<String, Double>();

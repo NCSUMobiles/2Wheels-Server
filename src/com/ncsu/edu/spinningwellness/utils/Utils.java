@@ -77,13 +77,13 @@ public class Utils {
 		}
 	}
 
-	public static long convertDateToString(Date date) {
+	public static long convertDateToLong(Date date) {
 
 		SimpleDateFormat df = new SimpleDateFormat("yyMMddHHmmss");
 		return Long.parseLong(df.format(date));
 	}
 
-	public static Date convertStringToDate(Long date) {
+	public static Date convertLongToDate(Long date) {
 		SimpleDateFormat df = new SimpleDateFormat("yyMMddHHmmss");
 		try {
 			return df.parse(date.toString());

@@ -220,13 +220,13 @@ public class RideController {
 		Date today = new Date();
 
 		Query query = new Query("Ride");
-		Filter startTimeFilterLessThan = new Query.FilterPredicate("startTime", FilterOperator.LESS_THAN_OR_EQUAL, Utils.convertDateToString(today));
+		Filter startTimeFilterLessThan = new Query.FilterPredicate("startTime", FilterOperator.LESS_THAN_OR_EQUAL, Utils.convertDateToLong(today));
 		
 		Calendar cal = Calendar.getInstance();  
 		cal.setTime(today);  
 		cal.add(Calendar.DATE, -7);  
 		today = cal.getTime();  		
-		Filter startTimeFilterGreaterThan = new Query.FilterPredicate("startTime", FilterOperator.GREATER_THAN_OR_EQUAL, Utils.convertDateToString(today));
+		Filter startTimeFilterGreaterThan = new Query.FilterPredicate("startTime", FilterOperator.GREATER_THAN_OR_EQUAL, Utils.convertDateToLong(today));
 
 		Filter activityStringRangeFilter = CompositeFilterOperator.and(startTimeFilterLessThan, startTimeFilterGreaterThan);
 		query.setFilter(activityStringRangeFilter);
@@ -266,7 +266,7 @@ public class RideController {
 
 		Query query = new Query("Ride");
 		Filter startTimeFilter =
-				new Query.FilterPredicate("startTime", FilterOperator.LESS_THAN_OR_EQUAL, Utils.convertDateToString(today));
+				new Query.FilterPredicate("startTime", FilterOperator.LESS_THAN_OR_EQUAL, Utils.convertDateToLong(today));
 
 		query.setFilter(startTimeFilter);
 		List<Entity> results = ds.prepare(query).asList(FetchOptions.Builder.withDefaults());
@@ -303,13 +303,13 @@ public class RideController {
 		Date today = new Date();
 
 		Query query = new Query("Ride");
-		Filter startTimeFilterGreaterThan = new Query.FilterPredicate("startTime", FilterOperator.GREATER_THAN_OR_EQUAL, Utils.convertDateToString(today));
+		Filter startTimeFilterGreaterThan = new Query.FilterPredicate("startTime", FilterOperator.GREATER_THAN_OR_EQUAL, Utils.convertDateToLong(today));
 		
 		Calendar cal = Calendar.getInstance();  
 		cal.setTime(today);
 		cal.add(Calendar.DATE, 7);
 		today = cal.getTime();
-		Filter startTimeFilterLessThan = new Query.FilterPredicate("startTime", FilterOperator.LESS_THAN_OR_EQUAL, Utils.convertDateToString(today));
+		Filter startTimeFilterLessThan = new Query.FilterPredicate("startTime", FilterOperator.LESS_THAN_OR_EQUAL, Utils.convertDateToLong(today));
 
 		Filter activityStringRangeFilter = CompositeFilterOperator.and(startTimeFilterLessThan, startTimeFilterGreaterThan);
 		query.setFilter(activityStringRangeFilter);
@@ -347,7 +347,7 @@ public class RideController {
 		Date today = new Date();
 
 		Query query = new Query("Ride");
-		Filter startTimeFilter = new Query.FilterPredicate("startTime", FilterOperator.GREATER_THAN_OR_EQUAL, Utils.convertDateToString(today));
+		Filter startTimeFilter = new Query.FilterPredicate("startTime", FilterOperator.GREATER_THAN_OR_EQUAL, Utils.convertDateToLong(today));
 
 		query.setFilter(startTimeFilter);
 		List<Entity> results = ds.prepare(query).asList(FetchOptions.Builder.withDefaults());
@@ -478,37 +478,34 @@ public class RideController {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/myupcomingridesfornextweek/{name}") 
-	public List<Ride> getMyUpcomingRidesForNextWeek(@PathParam("name") String name) {
+	public List<Ride> viewMyUpcomingRidesForNextWeek(@PathParam("name") String name) {
 		List<Ride> rides = new ArrayList<Ride>();
-
-		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-
-		Query query = new Query("UserActivity");
-
-		//End date filter
-		Date today = new Date();	  
-		Filter activityDateFilterLessThan = new Query.FilterPredicate("activityDate", FilterOperator.GREATER_THAN_OR_EQUAL, today);
-
-		//Start date filter
+		
+		Date today = new Date();
+		long todayLong = Utils.convertDateToLong(today);
+		
 		Calendar cal = Calendar.getInstance();  
 		cal.setTime(today);  
 		cal.add(Calendar.DATE, 7);  
-		today = cal.getTime();  		
-		Filter activityDateFilterGreaterThan = new Query.FilterPredicate("activityDate", FilterOperator.LESS_THAN_OR_EQUAL, today);
+		today = cal.getTime();
+		long weekLong = Utils.convertDateToLong(today);
+		
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		
+		Query query = new Query("Participant");
+		Filter userNameFilter = new Query.FilterPredicate("userName", FilterOperator.EQUAL, KeyFactory.createKey("User", name));
+		query.setFilter(userNameFilter);
 
-		//user name filter
-		Filter activityUserFilter = new Query.FilterPredicate("userName", FilterOperator.EQUAL, KeyFactory.createKey("User", name));
-
-		//complete composite filter
-		Filter activityFilter = CompositeFilterOperator.and(activityDateFilterLessThan, activityDateFilterGreaterThan, activityUserFilter);
-		query.setFilter(activityFilter);
-
-		List<Entity> results = ds.prepare(query).asList(FetchOptions.Builder.withDefaults());		
-		for(Entity result: results) {	
-			String rideId = (String) result.getProperty("rideId");
+		List<Entity> results = ds.prepare(query).asList(FetchOptions.Builder.withDefaults());
+		for(Entity result : results) {
+			String rideId = ((Key) result.getProperty("rideId")).getName();
+			
 			RideController rc = new RideController();
-			rides.add(rc.viewRide(rideId));
-		}		
+			Ride ride = rc.viewRide(rideId);
+			if(todayLong < ride.getStartTime() && ride.getStartTime() < weekLong) {
+				rides.add(ride);
+			}
+		}
 		return rides;
 	}
 
@@ -522,32 +519,28 @@ public class RideController {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/myupcomingrides/{name}") 
-	public List<Ride> getMyUpcomingRides(@PathParam("name") String name) {
+	public List<Ride> viewMyUpcomingRides(@PathParam("name") String name) {
 		List<Ride> rides = new ArrayList<Ride>();
-
+		
+		Date today = new Date();
+		long todaylong = Utils.convertDateToLong(today);
+		
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		
+		Query query = new Query("Participant");
+		Filter userNameFilter = new Query.FilterPredicate("userName", FilterOperator.EQUAL, KeyFactory.createKey("User", name));
+		query.setFilter(userNameFilter);
 
-		Query query = new Query("UserActivity");
-
-		//End date filter
-		Date today = new Date();	  
-		Filter activityDateFilterLessThan = new Query.FilterPredicate("activityDate", FilterOperator.GREATER_THAN_OR_EQUAL, today);		
-
-		//User name filter
-		Filter activityUserFilter = new Query.FilterPredicate("userName", FilterOperator.EQUAL, KeyFactory.createKey("User", name));
-
-		//complete composite filter
-		Filter activityFilter = CompositeFilterOperator.and(activityDateFilterLessThan, activityUserFilter);
-		query.setFilter(activityFilter);
-
-		List<Entity> results = ds.prepare(query).asList(FetchOptions.Builder.withDefaults());		
-		for(Entity result: results) {	
-			String rideId = (String) result.getProperty("rideId");
+		List<Entity> results = ds.prepare(query).asList(FetchOptions.Builder.withDefaults());
+		for(Entity result : results) {
+			String rideId = ((Key) result.getProperty("rideId")).getName();
+			
 			RideController rc = new RideController();
-			rides.add(rc.viewRide(rideId));
-		}		
+			Ride ride = rc.viewRide(rideId);
+			if(ride.getStartTime() > todaylong) {
+				rides.add(ride);
+			}
+		}
 		return rides;
-	}
-
-	
+	}	
 }
