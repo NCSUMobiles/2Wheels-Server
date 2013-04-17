@@ -37,7 +37,7 @@ public class RideController {
 
 	/**
 	 * create ride
-	 * upString ride
+	 * update ride
 	 * delete ride
 	 * view ride
 	 * 
@@ -542,5 +542,40 @@ public class RideController {
 			}
 		}
 		return rides;
-	}	
+	}
+	
+	/**
+	 * Returns all the upcoming rides for a user.
+	 *
+	 * @param  	name  	name of the user for which upcoming rides are requested.
+	 * 
+	 * @return			list of upcoming rides for a user.
+	 */
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/mypastrides/{name}") 
+	public List<Ride> viewMyPastRides(@PathParam("name") String name) {
+		List<Ride> rides = new ArrayList<Ride>();
+		
+		Date today = new Date();
+		long todaylong = Utils.convertDateToLong(today);
+		
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		
+		Query query = new Query("Participant");
+		Filter userNameFilter = new Query.FilterPredicate("userName", FilterOperator.EQUAL, KeyFactory.createKey("User", name));
+		query.setFilter(userNameFilter);
+
+		List<Entity> results = ds.prepare(query).asList(FetchOptions.Builder.withDefaults());
+		for(Entity result : results) {
+			String rideId = ((Key) result.getProperty("rideId")).getName();
+			
+			RideController rc = new RideController();
+			Ride ride = rc.viewRide(rideId);
+			if(ride.getStartTime() < todaylong) {
+				rides.add(ride);
+			}
+		}
+		return rides;
+	}
 }
