@@ -520,18 +520,24 @@ public class UserController {
 		for(Entity result: results) {
 
 			String userName = ((Key) result.getProperty("userName")).getName();
-			Double distanceCovered = (Double) result.getProperty("distanceCovered");
-			userDistanceCovered.put(userName, (Double) ((Double) (userDistanceCovered.get(userName)) + distanceCovered));
+			
+			Double totalDistaceCovered = 0.0;
+			if(userDistanceCovered.get(userName) != null)
+					totalDistaceCovered = userDistanceCovered.get(userName);
+			totalDistaceCovered += (Double) result.getProperty("distanceCovered");
+			
+			userDistanceCovered.put(userName, totalDistaceCovered);
 		}
 
 		Map<String, Double> sortedMap = Utils.sortMapOnValues(userDistanceCovered);
 
 		List list = new LinkedList(sortedMap.entrySet());		
-		for (int i=list.size()-1; i>=list.size()-3; i--) {
+		System.out.println(list);
+		for (int i=list.size()-1; i>=list.size()-3 && i>=0; i--) {
 			Map.Entry entry = (Entry) list.get(i);
 			users.add(new User((String) entry.getKey()));
 		}
-
+		
 		return users;		
 	}
 
@@ -559,14 +565,20 @@ public class UserController {
 		for(Entity result: results) {
 
 			String userName = ((Key) result.getProperty("userName")).getName();
-			Double distanceCovered = (Double) result.getProperty("distanceCovered");
-			userDistanceCovered.put(userName, (Double) ((Double) (userDistanceCovered.get(userName)) + distanceCovered));
+			
+			Double totalDistaceCovered = 0.0;
+			if(userDistanceCovered.get(userName) != null)
+					totalDistaceCovered = userDistanceCovered.get(userName);
+			totalDistaceCovered += (Double) result.getProperty("distanceCovered");
+			
+			userDistanceCovered.put(userName, totalDistaceCovered);
 		}
 
 		Map<String, Double> sortedMap = Utils.sortMapOnValues(userDistanceCovered);
 
 		List list = new LinkedList(sortedMap.entrySet());		
-		for (int i=list.size()-1; i>=list.size()-3; i--) {
+		System.out.println(list);
+		for (int i=list.size()-1; i>=list.size()-3 && i>=0; i--) {
 			Map.Entry entry = (Entry) list.get(i);
 			users.add(new User((String) entry.getKey()));
 		}
