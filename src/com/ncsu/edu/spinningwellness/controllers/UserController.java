@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.ws.rs.GET;
 
@@ -22,6 +24,7 @@ import javax.ws.rs.core.MediaType;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
@@ -82,10 +85,73 @@ public class UserController {
 
 			Entity dbUser = new Entity("User", user.getName());
 			dbUser.setProperty("id", user.getName());
+			dbUser.setProperty("email", user.getEmailAddress());
+			dbUser.setProperty("retrievalAttr", "spinningwellness");
 			ds.put(dbUser);
 
 			return "Success";
 		}
+	}
+
+	/**
+	 * Returns the user from data store identified by name.
+	 *
+	 * @param  	name  		id of the user which is to be returned.
+	 * 
+	 * @return				user object from datastore identified by id.
+	 */
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/viewUser/{name}")
+	public User viewUser(@PathParam("name") String name) {
+
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		Key userKey = KeyFactory.createKey("User", name);
+		try {
+			Entity dbUser = ds.get(userKey);
+
+			String email = (String) dbUser.getProperty("email");
+
+			User user = new User(name, email);
+			return user;
+		} catch (EntityNotFoundException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	/**
+	 * Returns the user from data store identified by name.
+	 *
+	 * @param  	name  		id of the user which is to be returned.
+	 * 
+	 * @return				user object from datastore identified by id.
+	 */
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/getallusers")
+	public Set<User> getAllUser() {
+
+		Set<User> users = new HashSet<User>();
+
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+
+		Query query = new Query("User");
+
+		//filter retrieval filter
+		Filter retrievalFilter = new Query.FilterPredicate("retrievalAttr", FilterOperator.EQUAL, "spinningwellness");
+		query.setFilter(retrievalFilter);
+
+		List<Entity> results = ds.prepare(query).asList(FetchOptions.Builder.withDefaults());
+		for(Entity result: results) {
+
+			String id = (String) result.getProperty("id");
+			String email = (String) result.getProperty("email");
+
+			User u = new User(id, email);
+			users.add(u);
+		}
+		return users;
 	}
 
 	/**
@@ -535,7 +601,9 @@ public class UserController {
 		System.out.println(list);
 		for (int i=list.size()-1; i>=list.size()-3 && i>=0; i--) {
 			Map.Entry entry = (Entry) list.get(i);
-			users.add(new User((String) entry.getKey()));
+			String userName = (String) entry.getKey();
+			User user = viewUser(userName);
+			users.add(user);
 		}
 		
 		return users;		
@@ -580,7 +648,9 @@ public class UserController {
 		System.out.println(list);
 		for (int i=list.size()-1; i>=list.size()-3 && i>=0; i--) {
 			Map.Entry entry = (Entry) list.get(i);
-			users.add(new User((String) entry.getKey()));
+			String userName = (String) entry.getKey();
+			User user = viewUser(userName);
+			users.add(user);
 		}
 		
 		return users;		
