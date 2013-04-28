@@ -130,9 +130,9 @@ public class UserController {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/getallusers")
-	public Set<User> getAllUser() {
+	public List<User> getAllUser() {
 
-		Set<User> users = new HashSet<User>();
+		List<User> users = new ArrayList<User>();
 
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 
