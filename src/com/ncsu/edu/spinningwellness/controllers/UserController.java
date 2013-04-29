@@ -173,7 +173,7 @@ public class UserController {
 		} else {
 
 			//TODO: Delete all the rides for which this user was the creator
-			
+
 			//Deleting all the participant entries with this user name
 			RideController rc = new RideController();
 			List<String> rideIDs = RideUtils.getAllParticipantsByUserName(name);
@@ -218,7 +218,7 @@ public class UserController {
 					DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 
 					Entity dbUserActicity = new Entity("UserActivity", activity.getId());
-					
+
 					dbUserActicity.setProperty("id", activity.getId());
 					dbUserActicity.setProperty("rideId", persistedRide.getKey());
 					dbUserActicity.setProperty("userName", persistedUser.getKey());
@@ -341,6 +341,59 @@ public class UserController {
 			userActivities.add(ua);
 		}
 		return userActivities;
+	}
+
+	/**
+	 * Returns activity details for a user for a particular ride.
+	 *
+	 * @param  	username  	name of the user for which activities are requested
+	 * @param 	rideId		id of the ride for which the user activity is requested
+	 * 
+	 * @return				user activities for the requested ride if found
+	 * 						else returns null
+	 */
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/viewpastactivityforride/{username}/{rideid}") 
+	public UserActivity viewPastUserActivity(@PathParam("username") String username, @PathParam("rideid") String rideid) {
+
+		UserActivity userActivity = null;
+
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+
+		Query query = new Query("UserActivity");
+
+		//Filter for end date
+		Date today = new Date();
+		Filter activityDateFilter = new Query.FilterPredicate("activityDate", FilterOperator.LESS_THAN_OR_EQUAL, Utils.convertDateToLong(today));
+
+		//Filter for user name
+		Filter activityUserFilter = new Query.FilterPredicate("userName", FilterOperator.EQUAL, KeyFactory.createKey("User", username));
+
+		//complete composite filter
+		Filter activityFilter = CompositeFilterOperator.and(activityDateFilter, activityUserFilter);
+		query.setFilter(activityFilter);
+
+		List<Entity> results = ds.prepare(query).asList(FetchOptions.Builder.withDefaults());
+		for(Entity result: results) {
+
+			String dbRideId = ((Key) result.getProperty("rideId")).getName();
+			if(dbRideId.equalsIgnoreCase(rideid)) {
+
+				String id = (String) result.getProperty("id");
+
+				String userName = ((Key) result.getProperty("userName")).getName();
+				double distanceCovered = (Double) result.getProperty("distanceCovered");
+				double caloriesBurned = (Double) result.getProperty("caloriesBurned");
+				double heartRate = (Double) result.getProperty("heartRate");
+				double cadence = (Double) result.getProperty("cadence");
+				double averageSpeed = (Double) result.getProperty("averageSpeed");
+				long activityDate = (Long) result.getProperty("activityDate");
+
+				userActivity = new UserActivity(id, dbRideId, userName, distanceCovered, cadence, averageSpeed, caloriesBurned, heartRate, activityDate);
+			}
+		}
+		return userActivity;
 	}
 
 	/**
@@ -586,12 +639,12 @@ public class UserController {
 		for(Entity result: results) {
 
 			String userName = ((Key) result.getProperty("userName")).getName();
-			
+
 			Double totalDistaceCovered = 0.0;
 			if(userDistanceCovered.get(userName) != null)
-					totalDistaceCovered = userDistanceCovered.get(userName);
+				totalDistaceCovered = userDistanceCovered.get(userName);
 			totalDistaceCovered += (Double) result.getProperty("distanceCovered");
-			
+
 			userDistanceCovered.put(userName, totalDistaceCovered);
 		}
 
@@ -605,7 +658,7 @@ public class UserController {
 			User user = viewUser(userName);
 			users.add(user);
 		}
-		
+
 		return users;		
 	}
 
@@ -633,12 +686,12 @@ public class UserController {
 		for(Entity result: results) {
 
 			String userName = ((Key) result.getProperty("userName")).getName();
-			
+
 			Double totalDistaceCovered = 0.0;
 			if(userDistanceCovered.get(userName) != null)
-					totalDistaceCovered = userDistanceCovered.get(userName);
+				totalDistaceCovered = userDistanceCovered.get(userName);
 			totalDistaceCovered += (Double) result.getProperty("distanceCovered");
-			
+
 			userDistanceCovered.put(userName, totalDistaceCovered);
 		}
 
@@ -652,7 +705,7 @@ public class UserController {
 			User user = viewUser(userName);
 			users.add(user);
 		}
-		
+
 		return users;		
 	}	
 }
