@@ -357,7 +357,7 @@ public class UserController {
 	@Path("/viewpastactivityforride/{username}/{rideid}") 
 	public UserActivity viewPastUserActivity(@PathParam("username") String username, @PathParam("rideid") String rideid) {
 
-		UserActivity userActivity = null;
+		UserActivity userActivity = new UserActivity();
 
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 
