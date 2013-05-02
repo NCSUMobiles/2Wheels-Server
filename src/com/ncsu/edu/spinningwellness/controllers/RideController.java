@@ -92,7 +92,7 @@ public class RideController {
 				dbRide.setProperty("startTime", ride.getStartTime());
 
 				ds.put(dbRide);
-				
+
 				addParticipantToRide(new Participant(((Long)(Long.parseLong(ride.getId())+1)).toString(), ride.getId(), ride.getCreator()));
 
 				return "Success";
@@ -114,7 +114,7 @@ public class RideController {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.TEXT_PLAIN)
 	@Path("/upStringride/{id}") 
-	public String updateRide(@PathParam("id") String id, Ride ride){
+	public String updateRide(@PathParam("id") String id, Ride ride) {
 
 		Entity persistedRide = RideUtils.getSingleRide(id);
 		if(persistedRide == null) {
@@ -221,7 +221,7 @@ public class RideController {
 
 		Query query = new Query("Ride");
 		Filter startTimeFilterLessThan = new Query.FilterPredicate("startTime", FilterOperator.LESS_THAN_OR_EQUAL, Utils.convertDateToLong(today));
-		
+
 		Calendar cal = Calendar.getInstance();  
 		cal.setTime(today);  
 		cal.add(Calendar.DATE, -7);  
@@ -304,7 +304,7 @@ public class RideController {
 
 		Query query = new Query("Ride");
 		Filter startTimeFilterGreaterThan = new Query.FilterPredicate("startTime", FilterOperator.GREATER_THAN_OR_EQUAL, Utils.convertDateToLong(today));
-		
+
 		Calendar cal = Calendar.getInstance();  
 		cal.setTime(today);
 		cal.add(Calendar.DATE, 7);
@@ -338,16 +338,14 @@ public class RideController {
 	 */
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/viewupcomingrides") 
-	public List<Ride> viewUpcomingRides() {
+	@Path("/viewupcomingrides/{startTime}") 
+	public List<Ride> viewUpcomingRides(@PathParam("startTime") long startTimeFilterValue) {
 		List<Ride> rides = new ArrayList<Ride>();
 
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-
-		Date today = new Date();
-
+		
 		Query query = new Query("Ride");
-		Filter startTimeFilter = new Query.FilterPredicate("startTime", FilterOperator.GREATER_THAN_OR_EQUAL, Utils.convertDateToLong(today));
+		Filter startTimeFilter = new Query.FilterPredicate("startTime", FilterOperator.GREATER_THAN_OR_EQUAL, startTimeFilterValue);
 
 		query.setFilter(startTimeFilter);
 		List<Entity> results = ds.prepare(query).asList(FetchOptions.Builder.withDefaults());
@@ -431,10 +429,10 @@ public class RideController {
 		Entity persistedParticipant = RideUtils.getSingleParticipant(rideId, userName);
 		if(persistedParticipant != null) {
 
-				DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-				ds.delete(persistedParticipant.getKey());
+			DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+			ds.delete(persistedParticipant.getKey());
 
-				return "Success";
+			return "Success";
 		} else {
 			return "Failure: Invalid participant info";
 		}
@@ -467,7 +465,7 @@ public class RideController {
 		}
 		return participants;
 	}
-	
+
 	/**
 	 * Returns all the upcoming rides for a user from next week.
 	 *
@@ -480,18 +478,18 @@ public class RideController {
 	@Path("/myupcomingridesfornextweek/{name}") 
 	public List<Ride> viewMyUpcomingRidesForNextWeek(@PathParam("name") String name) {
 		List<Ride> rides = new ArrayList<Ride>();
-		
+
 		Date today = new Date();
 		long todayLong = Utils.convertDateToLong(today);
-		
+
 		Calendar cal = Calendar.getInstance();  
 		cal.setTime(today);  
 		cal.add(Calendar.DATE, 7);  
 		today = cal.getTime();
 		long weekLong = Utils.convertDateToLong(today);
-		
+
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-		
+
 		Query query = new Query("Participant");
 		Filter userNameFilter = new Query.FilterPredicate("userName", FilterOperator.EQUAL, KeyFactory.createKey("User", name));
 		query.setFilter(userNameFilter);
@@ -499,7 +497,7 @@ public class RideController {
 		List<Entity> results = ds.prepare(query).asList(FetchOptions.Builder.withDefaults());
 		for(Entity result : results) {
 			String rideId = ((Key) result.getProperty("rideId")).getName();
-			
+
 			RideController rc = new RideController();
 			Ride ride = rc.viewRide(rideId);
 			if(todayLong < ride.getStartTime() && ride.getStartTime() < weekLong) {
@@ -518,15 +516,12 @@ public class RideController {
 	 */
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/myupcomingrides/{name}") 
-	public List<Ride> viewMyUpcomingRides(@PathParam("name") String name) {
+	@Path("/myupcomingrides/{name}/{startTime}") 
+	public List<Ride> viewMyUpcomingRides(@PathParam("name") String name, @PathParam("startTime") long startTimeFilterValue) {
 		List<Ride> rides = new ArrayList<Ride>();
-		
-		Date today = new Date();
-		long todaylong = Utils.convertDateToLong(today);
-		
+
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-		
+
 		Query query = new Query("Participant");
 		Filter userNameFilter = new Query.FilterPredicate("userName", FilterOperator.EQUAL, KeyFactory.createKey("User", name));
 		query.setFilter(userNameFilter);
@@ -534,16 +529,16 @@ public class RideController {
 		List<Entity> results = ds.prepare(query).asList(FetchOptions.Builder.withDefaults());
 		for(Entity result : results) {
 			String rideId = ((Key) result.getProperty("rideId")).getName();
-			
+
 			RideController rc = new RideController();
 			Ride ride = rc.viewRide(rideId);
-			if(ride.getStartTime() > todaylong) {
+			if(ride.getStartTime() > startTimeFilterValue) {
 				rides.add(ride);
 			}
 		}
 		return rides;
 	}
-	
+
 	/**
 	 * Returns all the upcoming rides for a user.
 	 *
@@ -556,12 +551,12 @@ public class RideController {
 	@Path("/mypastrides/{name}") 
 	public List<Ride> viewMyPastRides(@PathParam("name") String name) {
 		List<Ride> rides = new ArrayList<Ride>();
-		
+
 		Date today = new Date();
 		long todaylong = Utils.convertDateToLong(today);
-		
+
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-		
+
 		Query query = new Query("Participant");
 		Filter userNameFilter = new Query.FilterPredicate("userName", FilterOperator.EQUAL, KeyFactory.createKey("User", name));
 		query.setFilter(userNameFilter);
@@ -569,7 +564,7 @@ public class RideController {
 		List<Entity> results = ds.prepare(query).asList(FetchOptions.Builder.withDefaults());
 		for(Entity result : results) {
 			String rideId = ((Key) result.getProperty("rideId")).getName();
-			
+
 			RideController rc = new RideController();
 			Ride ride = rc.viewRide(rideId);
 			if(ride.getStartTime() < todaylong) {
