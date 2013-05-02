@@ -548,12 +548,9 @@ public class RideController {
 	 */
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/mypastrides/{name}") 
-	public List<Ride> viewMyPastRides(@PathParam("name") String name) {
+	@Path("/mypastrides/{name}/{startTime}") 
+	public List<Ride> viewMyPastRides(@PathParam("name") String name, @PathParam("startTime") long startTimeFilterValue) {
 		List<Ride> rides = new ArrayList<Ride>();
-
-		Date today = new Date();
-		long todaylong = Utils.convertDateToLong(today);
 
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 
@@ -567,7 +564,7 @@ public class RideController {
 
 			RideController rc = new RideController();
 			Ride ride = rc.viewRide(rideId);
-			if(ride.getStartTime() < todaylong) {
+			if(ride.getStartTime() < startTimeFilterValue) {
 				rides.add(ride);
 			}
 		}
