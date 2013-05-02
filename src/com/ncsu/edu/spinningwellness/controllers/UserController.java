@@ -33,6 +33,7 @@ import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.SortDirection;
+import com.ncsu.edu.spinningwellness.entities.LeaderBoardEntry;
 import com.ncsu.edu.spinningwellness.entities.Ride;
 import com.ncsu.edu.spinningwellness.entities.User;
 import com.ncsu.edu.spinningwellness.entities.UserActivity;
@@ -618,9 +619,9 @@ public class UserController {
 	 */
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/topPerformersforlastweek") 
-	public List<User> getTopPerformersForLastWeek() {
-		List<User> users = new ArrayList<User>();
+	@Path("/topPerformersforlastweek/name") 
+	public List<LeaderBoardEntry> getTopPerformersForLastWeek(@PathParam("name") String name) {
+		List<LeaderBoardEntry> users = new ArrayList<LeaderBoardEntry>();
 
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 
@@ -656,11 +657,10 @@ public class UserController {
 
 		List list = new LinkedList(sortedMap.entrySet());		
 		System.out.println(list);
-		for (int i=list.size()-1; i>=list.size()-3 && i>=0; i--) {
+		for (int i=list.size()-1, j=1; i>=list.size()-3 && i>=0; i--, j++) {
 			Map.Entry entry = (Entry) list.get(i);
 			String userName = (String) entry.getKey();
-			User user = viewUser(userName);
-			users.add(user);
+			users.add(new LeaderBoardEntry(userName, userDistanceCovered.get(userName), j));
 		}
 
 		return users;		
@@ -673,9 +673,9 @@ public class UserController {
 	 */
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/topPerformers") 
-	public List<User> getTopPerformers() {
-		List<User> users = new ArrayList<User>();
+	@Path("/topPerformers/{name}") 
+	public List<LeaderBoardEntry> getTopPerformers(@PathParam("name") String name) {
+		List<LeaderBoardEntry> users = new ArrayList<LeaderBoardEntry>();
 
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 
@@ -701,13 +701,32 @@ public class UserController {
 
 		Map<String, Double> sortedMap = Utils.sortMapOnValues(userDistanceCovered);
 
+		boolean userOnLeaderBoard = false;
 		List list = new LinkedList(sortedMap.entrySet());		
 		System.out.println(list);
-		for (int i=list.size()-1; i>=list.size()-3 && i>=0; i--) {
+		for (int i=list.size()-1, j=1; i>=list.size()-3 && i>=0; i--, j++) {
 			Map.Entry entry = (Entry) list.get(i);
 			String userName = (String) entry.getKey();
-			User user = viewUser(userName);
-			users.add(user);
+			users.add(new LeaderBoardEntry(userName, userDistanceCovered.get(userName), j));
+			if(name.equalsIgnoreCase(userName)) {
+				userOnLeaderBoard = true;
+			}
+		}
+
+		if(!userOnLeaderBoard) {
+			
+			boolean userHasActivity = false;
+			for (int i=list.size()-1, j=1; i>=0; i--, j++) {
+				Map.Entry entry = (Entry) list.get(i);
+				String userName = (String) entry.getKey();
+				if(name.equalsIgnoreCase(userName)) {
+					users.add(new LeaderBoardEntry(userName, userDistanceCovered.get(userName), j));
+					userHasActivity = true;
+				}
+			}
+			
+			if(!userHasActivity)
+				users.add(new LeaderBoardEntry(name, 0.0, -1));
 		}
 
 		return users;		
