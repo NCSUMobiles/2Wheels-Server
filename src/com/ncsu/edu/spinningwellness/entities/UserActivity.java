@@ -12,13 +12,14 @@ public class UserActivity {
 	double cadence;
 	double averageSpeed;
 	double caloriesBurned;
+	double timeOfRide;
 	double heartRate;
 	long activityDate;
 
 	public UserActivity() {}
 
 	public UserActivity(String id, String rideId, String userName, double distaceCovered,
-			double cadence, double averageSpeed, double caloriesBurned, double heartRate, long activityDate) {
+			double cadence, double averageSpeed, double caloriesBurned, double timeOfRide, double heartRate, long activityDate) {
 		super();
 		this.id = id;
 		this.rideId = rideId;
@@ -27,6 +28,7 @@ public class UserActivity {
 		this.cadence = cadence;
 		this.averageSpeed = averageSpeed;
 		this.caloriesBurned = caloriesBurned;
+		this.timeOfRide = timeOfRide;
 		this.heartRate = heartRate;
 		this.activityDate = activityDate;
 	}
@@ -87,20 +89,28 @@ public class UserActivity {
 		this.caloriesBurned = caloriesBurned;
 	}
 
-	public long getActivityDate() {
-		return activityDate;
+	public double getTimeOfRide() {
+		return timeOfRide;
 	}
 
-	public void setActivityDate(long activityDate) {
-		this.activityDate = activityDate;
+	public void setTimeOfRide(double timeOfRide) {
+		this.timeOfRide = timeOfRide;
 	}
 
 	public double getHeartRate() {
 		return heartRate;
 	}
 
-	public void setHeartRate(long heartRate) {
+	public void setHeartRate(double heartRate) {
 		this.heartRate = heartRate;
+	}
+
+	public long getActivityDate() {
+		return activityDate;
+	}
+
+	public void setActivityDate(long activityDate) {
+		this.activityDate = activityDate;
 	}
 
 	@Override

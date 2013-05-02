@@ -224,6 +224,7 @@ public class UserController {
 					dbUserActicity.setProperty("userName", persistedUser.getKey());
 					dbUserActicity.setProperty("distanceCovered", activity.getDistaceCovered());
 					dbUserActicity.setProperty("caloriesBurned", activity.getCaloriesBurned());
+					dbUserActicity.setProperty("timeOfRide", activity.getTimeOfRide());
 					dbUserActicity.setProperty("cadence", activity.getCadence());
 					dbUserActicity.setProperty("heartRate", activity.getHeartRate());
 					dbUserActicity.setProperty("averageSpeed", activity.getAverageSpeed());
@@ -284,12 +285,13 @@ public class UserController {
 			String userName = ((Key) result.getProperty("userName")).getName();
 			double distanceCovered = (Double) result.getProperty("distanceCovered");
 			double caloriesBurned = (Double) result.getProperty("caloriesBurned");
+			double timeOfRide = (Double) result.getProperty("timeOfRide");
 			double heartRate = (Double) result.getProperty("heartRate");
 			double cadence = (Double) result.getProperty("cadence");
 			double averageSpeed = (Double) result.getProperty("averageSpeed");
 			long activityDate = (Long) result.getProperty("activityDate");
 
-			UserActivity ua = new UserActivity(id, rideId, userName, distanceCovered, cadence, averageSpeed, caloriesBurned, heartRate, activityDate);
+			UserActivity ua = new UserActivity(id, rideId, userName, distanceCovered, cadence, averageSpeed, caloriesBurned, timeOfRide, heartRate, activityDate);
 			userActivities.add(ua);
 		}
 		return userActivities;		
@@ -332,12 +334,13 @@ public class UserController {
 			String userName = ((Key) result.getProperty("userName")).getName();
 			double distanceCovered = (Double) result.getProperty("distanceCovered");
 			double caloriesBurned = (Double) result.getProperty("caloriesBurned");
+			double timeOfRide = (Double) result.getProperty("timeOfRide");
 			double heartRate = (Double) result.getProperty("heartRate");
 			double cadence = (Double) result.getProperty("cadence");
 			double averageSpeed = (Double) result.getProperty("averageSpeed");
 			long activityDate = (Long) result.getProperty("activityDate");
 
-			UserActivity ua = new UserActivity(id, rideId, userName, distanceCovered, cadence, averageSpeed, caloriesBurned, heartRate, activityDate);
+			UserActivity ua = new UserActivity(id, rideId, userName, distanceCovered, cadence, averageSpeed, caloriesBurned, timeOfRide, heartRate, activityDate);
 			userActivities.add(ua);
 		}
 		return userActivities;
@@ -385,12 +388,13 @@ public class UserController {
 				String userName = ((Key) result.getProperty("userName")).getName();
 				double distanceCovered = (Double) result.getProperty("distanceCovered");
 				double caloriesBurned = (Double) result.getProperty("caloriesBurned");
+				double timeOfRide = (Double) result.getProperty("timeOfRide");
 				double heartRate = (Double) result.getProperty("heartRate");
 				double cadence = (Double) result.getProperty("cadence");
 				double averageSpeed = (Double) result.getProperty("averageSpeed");
 				long activityDate = (Long) result.getProperty("activityDate");
 
-				userActivity = new UserActivity(id, dbRideId, userName, distanceCovered, cadence, averageSpeed, caloriesBurned, heartRate, activityDate);
+				userActivity = new UserActivity(id, dbRideId, userName, distanceCovered, cadence, averageSpeed, caloriesBurned, timeOfRide, heartRate, activityDate);
 			}
 		}
 		return userActivity;
