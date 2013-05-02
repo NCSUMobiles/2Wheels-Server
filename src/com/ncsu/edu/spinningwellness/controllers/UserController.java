@@ -106,19 +106,19 @@ public class UserController {
 	@Path("/viewUser/{name}")
 	public User viewUser(@PathParam("name") String name) {
 
+		User user = new User();
+		
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		Key userKey = KeyFactory.createKey("User", name);
 		try {
 			Entity dbUser = ds.get(userKey);
-
 			String email = (String) dbUser.getProperty("email");
-
-			User user = new User(name, email);
-			return user;
+			user = new User(name, email);
 		} catch (EntityNotFoundException e) {
 			e.printStackTrace();
-			return null;
 		}
+		
+		return user;
 	}
 
 	/**
