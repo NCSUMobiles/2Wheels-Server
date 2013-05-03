@@ -205,40 +205,40 @@ public class UserController {
 	@Path("/loguseractivity") 
 	public String logUserActivity(UserActivity activity) {
 
-		Entity persistedActivity = UserUtils.getSingleUserActivity(activity.getRideId(), activity.getUserName());
-		if(persistedActivity != null) {
-			return "Failure: Duplicate activity";
-		} else {
+		Entity persistedUser = UserUtils.getSingleUser(activity.getUserName());
+		if(persistedUser != null) {			
 
-			Entity persistedUser = UserUtils.getSingleUser(activity.getUserName());
-			if(persistedUser != null) {			
+			Entity persistedRide = RideUtils.getSingleRide(activity.getRideId());
+			if(persistedRide != null) {
 
-				Entity persistedRide = RideUtils.getSingleRide(activity.getRideId());
-				if(persistedRide != null) {
+				DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 
-					DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+				Entity dbUserActicity = new Entity("UserActivity", activity.getId());
 
-					Entity dbUserActicity = new Entity("UserActivity", activity.getId());
-
+				Entity persistedActivity = UserUtils.getSingleUserActivity(activity.getRideId(), activity.getUserName());
+				if(persistedActivity != null) {
+					dbUserActicity.setProperty("id", persistedActivity.getKey());
+				} else { 
 					dbUserActicity.setProperty("id", activity.getId());
-					dbUserActicity.setProperty("rideId", persistedRide.getKey());
-					dbUserActicity.setProperty("userName", persistedUser.getKey());
-					dbUserActicity.setProperty("distanceCovered", activity.getDistaceCovered());
-					dbUserActicity.setProperty("caloriesBurned", activity.getCaloriesBurned());
-					dbUserActicity.setProperty("timeOfRide", activity.getTimeOfRide());
-					dbUserActicity.setProperty("cadence", activity.getCadence());
-					dbUserActicity.setProperty("heartRate", activity.getHeartRate());
-					dbUserActicity.setProperty("averageSpeed", activity.getAverageSpeed());
-					dbUserActicity.setProperty("activityDate", activity.getActivityDate());
-					ds.put(dbUserActicity);
-
-					return "Success";
-				} else {
-					return "Failure: Ride does not exist";
 				}
+
+				dbUserActicity.setProperty("rideId", persistedRide.getKey());
+				dbUserActicity.setProperty("userName", persistedUser.getKey());
+				dbUserActicity.setProperty("distanceCovered", activity.getDistaceCovered());
+				dbUserActicity.setProperty("caloriesBurned", activity.getCaloriesBurned());
+				dbUserActicity.setProperty("timeOfRide", activity.getTimeOfRide());
+				dbUserActicity.setProperty("cadence", activity.getCadence());
+				dbUserActicity.setProperty("heartRate", activity.getHeartRate());
+				dbUserActicity.setProperty("averageSpeed", activity.getAverageSpeed());
+				dbUserActicity.setProperty("activityDate", activity.getActivityDate());
+				ds.put(dbUserActicity);
+
+				return "Success";
 			} else {
-				return "Failure: User does not exist";	
+				return "Failure: Ride does not exist";
 			}
+		} else {
+			return "Failure: User does not exist";	
 		}
 	}
 
@@ -714,7 +714,7 @@ public class UserController {
 		}
 
 		if(!userOnLeaderBoard) {
-			
+
 			boolean userHasActivity = false;
 			for (int i=list.size()-1, j=1; i>=0; i--, j++) {
 				Map.Entry entry = (Entry) list.get(i);
@@ -724,7 +724,7 @@ public class UserController {
 					userHasActivity = true;
 				}
 			}
-			
+
 			if(!userHasActivity)
 				users.add(new LeaderBoardEntry(name, 0.0, -1));
 		}
