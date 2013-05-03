@@ -215,13 +215,7 @@ public class UserController {
 
 				Entity dbUserActicity = new Entity("UserActivity", activity.getId());
 
-				Entity persistedActivity = UserUtils.getSingleUserActivity(activity.getRideId(), activity.getUserName());
-				if(persistedActivity != null) {
-					dbUserActicity.setProperty("id", persistedActivity.getKey());
-				} else { 
-					dbUserActicity.setProperty("id", activity.getId());
-				}
-
+				dbUserActicity.setProperty("id", activity.getId());
 				dbUserActicity.setProperty("rideId", persistedRide.getKey());
 				dbUserActicity.setProperty("userName", persistedUser.getKey());
 				dbUserActicity.setProperty("distanceCovered", activity.getDistaceCovered());
