@@ -1,6 +1,6 @@
 $(document).ready(function() {
 			//alert("Welcome to Spinning Wellness!");
-			$('#log').hide();
+	        $('#log').hide();
 			
 			
 			$.ajax({
@@ -9,6 +9,11 @@ $(document).ready(function() {
 				contentType: "application/json; charset=utf-8",
 				dataType: "json",
 				success: function(response) {
+					
+					var o = new Option("-- Select --", "None");
+					/// jquerify the DOM object 'o' so we can use the html method
+					$(o).html("-- Select --");
+					$("#userList").append(o);
 					for (var i = 0; i < response.user.length; i++) {
 						var aUsername = response.user[i].name;
 						var o = new Option(aUsername, aUsername);
@@ -18,9 +23,13 @@ $(document).ready(function() {
 					}
 					
 					$("#userList").change(function(){
+						
 					    var user = $("#userList").val() ;
-					    
-					    showmyupcomingrides(user);
+					    if(user != "None"){
+					    	alert("fetch rides");
+						    clearrides();
+						    showmyupcomingrides(user);
+					    }
 					});
 				
 			  },
@@ -30,6 +39,10 @@ $(document).ready(function() {
 			}
 		});
 	});
+
+function clearrides(){
+	$("#rideList").empty();
+}
 		
 function showmyupcomingrides(user){
 	var dateVal = new Date().getTime();
@@ -74,9 +87,9 @@ function submitDetail(event){
 	alert("submit clicked" + event.data.param1 + " " + event.data.param2);
 	
 	var currentState = {}; 
-	currentState["id"] = "050913234949851";
+	var now= new Date();
+	currentState["id"] = jQuery.datepicker.parseDate(now,"mmddy") + now.getHours()+':'+now.getMinutes()+':'+now.getSeconds(); //"050913234949851";
 	currentState["rideId"] = event.data.param1 ;
-	alert("gome");
 	currentState["userName"] = event.data.param2;
 	currentState["distaceCovered"] = $("#distance").val();
 	currentState["cadence"] = $("#cadence").val();
