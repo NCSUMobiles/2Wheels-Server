@@ -107,7 +107,7 @@ public class UserController {
 	public User viewUser(@PathParam("name") String name) {
 
 		User user = new User();
-		
+
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		Key userKey = KeyFactory.createKey("User", name);
 		try {
@@ -117,7 +117,7 @@ public class UserController {
 		} catch (EntityNotFoundException e) {
 			e.printStackTrace();
 		}
-		
+
 		return user;
 	}
 
@@ -210,6 +210,12 @@ public class UserController {
 
 			Entity persistedRide = RideUtils.getSingleRide(activity.getRideId());
 			if(persistedRide != null) {
+
+				Entity persistedActivity = UserUtils.getSingleUserActivity(activity.getRideId(), activity.getUserName());
+				if(persistedActivity != null) {
+					DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+					ds.delete(persistedActivity.getKey());
+				}
 
 				DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 
