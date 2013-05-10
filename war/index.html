@@ -12,42 +12,71 @@
 <title>Spinning Wellness</title>
 <script type="text/javascript"
 	src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
-<link rel="stylesheet" type="text/css" href="sw.css"/>
+<link rel="stylesheet" type="text/css" href="sw.css" />
 
-
-
-	<script language="javascript" type="text/javascript" src="script.js">
-		
+<script language="javascript" type="text/javascript" src="script.js">
+	
 </script>
 </head>
 <body>
-    
-    
-	<form id="form1" runat="server">
-		<div>
-			Select a user:
-			<select id="userList">
-				
-			</select>
-			Rides:
-			<select id="rideList">
-				
-			</select>
-			<div id="errMessage"></div>
 
-		</div>
-		
-		<div id="log" >
-			Distance covered: <input id="distance"></input> mi <br>
-			Average Speed: <input id="speed"></input> mi/hr <br>
-			Time: <input id="time"></input> mins <br> 
-			Heart Rate: <input id="heartrate"></input> bpm <br>
-			Cadence: <input id="cadence"></input> rpm <br>
-			Calories burnt: <input id="cal"></input> cals <br>
-			<input id="submitButton" type="button"  />
-		</div>
-	</form>
+	<table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-top: 10%;">
+		<tr>
+			<td align="center" valign="middle">
+				<h1 style="margin: 10pt; text-align: center; margin-top: 10pt; font: bold; font-family: cursive; color: green;">Spinning Wellness</h1>
+				<form id="form1" runat="server">
+					<div>
+						<table>
+							<tr>
+								<td>Select a user:</td>
+								<td><select id="userList"></select></td>
+								<td>Select a Ride:</td>
+								<td><select id="rideList"></select></td>
+							</tr>
+						</table>
+					</div>
+
+					<div id="errMessage"></div>
+
+					<div id="log">
+						<table>
+							<tr>
+								<td>Distance covered:</td>
+								<td><input id="distance"></input></td>
+								<td>mi</td>
+							</tr>
+							<tr>
+								<td>Average Speed:</td>
+								<td><input id="speed"></input></td>
+								<td>mi/hr</td>
+							</tr>
+							<tr>
+								<td>Time:</td>
+								<td><input id="time"></input></td>
+								<td>mins</td>
+							</tr>
+							<tr>
+								<td>Heart Rate:</td>
+								<td><input id="heartrate"></input></td>
+								<td>bpm</td>
+							</tr>
+							<tr>
+								<td>Cadence:</td>
+								<td><input id="cadence"></input></td>
+								<td>rpm</td>
+							</tr>
+							<tr>
+								<td>Calories burnt:</td>
+								<td><input id="cal"></input></td>
+								<td>cals</td>
+							</tr>
+						</table>
+						<input id="submitButton" type="button" value="Submit"
+							style="width: 60px" />
+					</div>
+				</form>
+			</td>
+		</tr>
+	</table>
 </body>
-
-
 </html>
