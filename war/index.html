@@ -12,13 +12,15 @@
 <title>Spinning Wellness</title>
 <script type="text/javascript"
 	src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
+<link rel="stylesheet" type="text/css" href="sw.css"/>
 
-</head>
 
-<body>
+
 	<script language="javascript" type="text/javascript">
 		$(document).ready(function() {
 			alert("Welcome to Spinning Wellness!");
+			
+			
 			
 			$.ajax({
 				type: "GET",
@@ -85,7 +87,9 @@ function getRideDetails(ride,user){
 }
 </script>
 </head>
-<body background="bckgd.png">
+<body background="bckgd.png" >
+    
+    
 	<form id="form1" runat="server">
 		<div>
 			Select a user:
