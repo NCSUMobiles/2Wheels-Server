@@ -16,78 +16,11 @@
 
 
 
-	<script language="javascript" type="text/javascript">
-		$(document).ready(function() {
-			alert("Welcome to Spinning Wellness!");
-			
-			
-			
-			$.ajax({
-				type: "GET",
-				url: "resources/l2wuser/getallusers",
-				contentType: "application/json; charset=utf-8",
-				dataType: "json",
-				success: function(response) {
-					for (var i = 0; i < response.user.length; i++) {
-						var aUsername = response.user[i].name;
-						var o = new Option(aUsername, aUsername);
-						/// jquerify the DOM object 'o' so we can use the html method
-						$(o).html(aUsername);
-						$("#userList").append(o);
-					}
-					
-					$("#userList").change(function(){
-					    var user = $("#userList").val() ;
-					    
-					    showmyupcomingrides(user);
-					});
-				
-			},
-			failure: function(errMsg) {
-				alert("in error!");
-				$("#errMessage").text(errMsg);
-			}
-		});
-});
+	<script language="javascript" type="text/javascript" src="script.js">
 		
-function showmyupcomingrides(user){
-	var dateVal = new Date().getTime();
-	alert(dateVal);
-	$.ajax({
-		type: "GET",
-		url: "resources/l2wride/myupcomingrides/" + user + "/" + dateVal,
-		contentType: "application/json; charset=utf-8",
-		dataType: "json",
-		success: function(response) {
-			
-			for (var i = 0; i < response.ride.length; i++) {
-				var aride = response.ride[i].name;
-				var o = new Option(aride, aride);
-				/// jquerify the DOM object 'o' so we can use the html method
-				$(o).html(aride);
-				$("#rideList").append(o);
-			}
-			
-			$("#rideList").change(function(){
-			    var ride = $("#rideList").val() ;
-			    
-			    getRideDetails(ride,user);
-			});
-		
-	},
-	failure: function(errMsg) {
-		alert("in error!");
-		$("#errMessage").text(errMsg);
-	}
-});	
-}	
-	
-function getRideDetails(ride,user){
-	alert("get ride details");
-}
 </script>
 </head>
-<body background="bckgd.png" >
+<body>
     
     
 	<form id="form1" runat="server">
@@ -102,6 +35,16 @@ function getRideDetails(ride,user){
 			</select>
 			<div id="errMessage"></div>
 
+		</div>
+		
+		<div id="log" >
+			Distance covered: <input id="distance"></input> mi <br>
+			Average Speed: <input id="speed"></input> mi/hr <br>
+			Time: <input id="time"></input> mins <br> 
+			Heart Rate: <input id="heartrate"></input> bpm <br>
+			Cadence: <input id="cadence"></input> rpm <br>
+			Calories burnt: <input id="cal"></input> cals <br>
+			<input id="submitButton" type="button"  />
 		</div>
 	</form>
 </body>

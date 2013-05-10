@@ -1,3 +1,2 @@
-body {  height: 100%; width: 100%;
-position: absolute;
-top: 0; }
+body {  background: url(bckgd.png) no-repeat;
+  background-size: 100%;}
