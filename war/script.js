@@ -68,17 +68,21 @@ function showmyupcomingrides(user){
 						$(o).html(aride.name);
 						$("#rideList").append(o);
 					}
+					$("#errMessage").text("");
 				}else{
 					alert("No past rides found for user.");
+					$('#log').hide();
 				}
 			} else{
 				alert("No past rides found for user.");
 				$("#errMessage").text("No rides found");
+				$('#log').hide();
 			}
 			$("#rideList").change(function(){
 				var rideid = $("#rideList").val() ;
 				if(rideid != "None"){
 					getRideDetails(rideid,user);
+					$("#errMessage").text("");
 				}
 			});
 
@@ -100,6 +104,8 @@ function getRideDetails(ride,user){
 function submitDetail(event){
 	//alert("submit clicked" + event.data.param1 + " " + event.data.param2);
 
+	$("#errMessage").text("");
+	
 	var currentState = {}; 
 	var now= new Date();
 	currentState["id"] = now.getMonth() + now.getDate() + now.getYear() + now.getHours()+':'+now.getMinutes()+':'+now.getSeconds(); //"050913234949851";
