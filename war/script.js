@@ -1,6 +1,7 @@
 $(document).ready(function() {
 			//alert("Welcome to Spinning Wellness!");
 	        $('#log').hide();
+			$("#rideList").attr('disabled','disabled');
 			
 			
 			$.ajax({
@@ -28,6 +29,7 @@ $(document).ready(function() {
 					    if(user != "None"){
 					    	alert("fetch rides");
 						    clearrides();
+						    $("#rideList").removeAttr('disabled');
 						    showmyupcomingrides(user);
 					    }
 					});
